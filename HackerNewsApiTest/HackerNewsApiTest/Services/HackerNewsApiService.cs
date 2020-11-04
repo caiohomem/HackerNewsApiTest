@@ -33,6 +33,7 @@ namespace HackerNewsApiTest.Services
 
                 var story = JObject.Parse(await _client.GetStringAsync(string.Format("item/{0}.json", id)));
                 _cache.Set(id, story, cacheEntryOptions);
+                cacheEntry = story;
             }
 
             return cacheEntry;

@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
+using HackerNewsApiTest.Services;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 
 namespace HackerNewsApiTest.Controllers
 {
@@ -10,12 +10,30 @@ namespace HackerNewsApiTest.Controllers
     [ApiController]
     public class HackerNewsApiController : ControllerBase
     {
+
+        private readonly HackerNewsApiService _service;
+
+        public HackerNewsApiController(HackerNewsApiService service)
+        {
+            _service = service;
+        }
+
         // GET api/values
         [HttpGet]
         [Route("beststories")]
-        public ActionResult<IEnumerable<string>> GetBestStories()
+        public async Task<ActionResult<JArray>> GetBestStories()
         {
-            return new string[] { "value1", "value2" };
+            var jsonArray = await _service.GetIdsBestStories();
+            var idFirst20Stories = jsonArray.Take(20);
+
+            var stories = new JArray();
+            foreach (var id in idFirst20Stories)
+            {
+                var jsonObject = await _service.GetStory(id.Value<string>());
+                stories.Add(jsonObject);
+            };
+
+            return new JArray(stories.OrderByDescending(obj => (int)obj["score"]));
         }
     }
 }

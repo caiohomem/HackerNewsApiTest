@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HackerNewsApiTest.Controllers;
+using HackerNewsApiTest.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -27,6 +29,12 @@ namespace HackerNewsApiTest
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddSwaggerGen();
+
+            services.AddHttpClient<HackerNewsApiService>(c =>
+            {
+                c.BaseAddress = new Uri("https://hacker-news.firebaseio.com/v0/");
+                c.DefaultRequestHeaders.Add("Accept", "application/json");
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
